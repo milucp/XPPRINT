@@ -1,18 +1,6 @@
-"""Console script for xpprint."""
-import argparse
 import sys
 
-
-def main():
-    """Console script for xpprint."""
-    parser = argparse.ArgumentParser()
-    parser.add_argument('_', nargs='*')
-    args = parser.parse_args()
-
-    print("Arguments: " + str(args._))
-    print("Replace this message by putting your code into "
-          "xpprint.cli.main")
-    return 0
+from xpprint import main
 
 
 if __name__ == "__main__":

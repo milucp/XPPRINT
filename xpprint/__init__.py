@@ -1,5 +1,4 @@
-"""Top-level package for XPPRINT."""
-
-__author__ = """milucp"""
-__email__ = 'None'
+__author__  = 'milucp'
 __version__ = '0.1.0'
+
+from .xpprint import main
