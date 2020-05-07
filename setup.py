@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 with open('README.md') as readme_file:
     readme = readme_file.read()
 
-requirements = [ ]
+requirements = ['beautifulsoup4>=4.9.0',]
 
 setup_requirements = [ ]
 
@@ -23,6 +23,7 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
     ],
+    description='pretty-print of html',
     entry_points={
         'console_scripts': [
             'xpprint=xpprint.cli:main',
@@ -38,6 +39,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/milucp/xpprint',
-    version='0.1.0',
+    version='0.1.2',
     zip_safe=False,
 )
