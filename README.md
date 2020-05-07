@@ -54,3 +54,13 @@ GETTING STARTED
     | | | | | -td
     | | | | | | -img
     -div#footer
+
+
+IMPORTANT LINKS
+---------------
+
+- The Tree Command for Linux Homepage -
+  http://mama.indstate.edu/users/ice/tree/
+
+- Collecting More Data from the Modern Web | Web Scraping with Python -
+  http://www.pythonscraping.com/
