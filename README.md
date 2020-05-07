@@ -56,6 +56,24 @@ GETTING STARTED
     -div#footer
 
 
+USAGE
+-----
+
+    $ xpprint -h
+    usage: xpprint [-h] [--filter [FILTER]] [--parser PARSER] [--source] [html]
+    
+    html tree view pprint
+    
+    positional arguments:
+      html               stdin or .html filename
+    
+    optional arguments:
+      -h, --help         show this help message and exit
+      --filter [FILTER]  filtered tag names (default: ['p', 'br', 'span'])
+      --parser PARSER    HTML parser name (default: html.parser)
+      --source           add "sourceline, pos" of corresponding start-tags
+
+
 IMPORTANT LINKS
 ---------------
 
