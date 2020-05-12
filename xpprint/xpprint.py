@@ -74,7 +74,7 @@ def __parser():
     parser = argparse.ArgumentParser(description=PARSER_DESC0)
     parser.add_argument('html', nargs='?', type=argparse.FileType('r'), default=sys.stdin,
                         help=PARSER_HELP0)
-    parser.add_argument('--filter', nargs='?', default=['p', 'br', 'span'],
+    parser.add_argument('--filter', nargs='*', default=['p', 'br', 'span'],
                         help=PARSER_HELP1)
     parser.add_argument('--parser', default='html.parser',
                         help=PARSER_HELP2)

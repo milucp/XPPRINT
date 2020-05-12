@@ -54,24 +54,36 @@ GETTING STARTED
     | | | | | -td
     | | | | | | -img
     -div#footer
+    
+    $ curl -s http://www.pythonscraping.com/pages/page3.html | xpprint --source --select "#gift3 > td:nth-child(1)"
+      1,  0  -html
+     23,  0  | -body
+     24,  0  | | -div#wrapper
+     33,  0  | | | -table#giftList
+     65,  0  | | | | -tr.gift#gift3
+     65, 28  | | | | | -td
 
 
 USAGE
 -----
 
     $ xpprint -h
-    usage: xpprint [-h] [--filter [FILTER]] [--parser PARSER] [--source] [html]
+    usage: xpprint [-h] [--filter [FILTER [FILTER ...]]] [--parser PARSER]
+                   [--source] [--select SELECT]
+                   [html]
     
     html tree view pprint
     
     positional arguments:
-      html               stdin or .html filename
+      html                  stdin or .html filename
     
     optional arguments:
-      -h, --help         show this help message and exit
-      --filter [FILTER]  filtered tag names (default: ['p', 'br', 'span'])
-      --parser PARSER    HTML parser name (default: html.parser)
-      --source           add "sourceline, pos" of corresponding start-tags
+      -h, --help            show this help message and exit
+      --filter [FILTER [FILTER ...]]
+                            filtered tag names (default: ['p', 'br', 'span'])
+      --parser PARSER       HTML parser name (default: html.parser)
+      --source              add "sourceline, pos" of corresponding start-tags
+      --select SELECT       css selector string, must be quoted
 
 
 IMPORTANT LINKS
