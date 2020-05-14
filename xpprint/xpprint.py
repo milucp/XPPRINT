@@ -26,7 +26,7 @@ class HtmlNode(object):
         self.level   = level
         self.text    = bsObj.get_text()
     
-    def pprint(self, source, srcdigit, treedigit=0):
+    def pprint(self, source, srcdigit, treedigit=0, *, file=sys.stdout):
         name    = self.name
         indent  = '| ' * max(self.level, 0)
         clsrepr = '.' + ' '.join(self.class_) if self.class_ else ''
@@ -42,7 +42,7 @@ class HtmlNode(object):
             textrepr = self.text.strip().replace('\n', '')[:self.TEXT_REPR_LEN]
             treerepr = treerepr.ljust(treedigit) + '  ' + textrepr
         
-        return treerepr
+        print(treerepr, file=file)
 
 
 class HtmlTree(object):
@@ -56,21 +56,20 @@ class HtmlTree(object):
              nodelist=self.nodelist)
         return self
     
-    def pprint(self, source=False, text=False):
+    def pprint(self, source=False, text=False, *, file=sys.stdout):
         treedigit = 0
         srcdigit  = (3, 3)
         
         if text:
-            treerepr = self.pprint(source=source, text=False)
-            treedigit = max([len(s) for s in treerepr.split('\n')])
+            with StringIO() as buf:
+                self.pprint(source=source, text=False, file=buf)
+                treedigit = max([len(s) for s in buf.getvalue().split('\n')])
         
         if source:
             srcdigit = digitlize(max([node.srcline for node in self.nodelist])), digitlize(max([node.srcpos for node in self.nodelist]))
         
-        with StringIO() as buf:
-            for node in self.nodelist:
-                print(node.pprint(source, srcdigit, treedigit=treedigit), file=buf)
-            return buf.getvalue()
+        for node in self.nodelist:
+            node.pprint(source, srcdigit, treedigit=treedigit, file=file)
 
 
 def select_one_strict(bsObj, selector):
@@ -156,7 +155,7 @@ def main():
     bsObj = BeautifulSoup(html, features=args.parser)
     
     # destructive parse!
-    print(HtmlTree().parse(bsObj, filter=args.filter, selector=args.select).pprint(source=args.source, text=args.text))
+    HtmlTree().parse(bsObj, filter=args.filter, selector=args.select).pprint(source=args.source, text=args.text)
     
     if args.raw and args.select:
         print('')  # blank line
