@@ -13,17 +13,24 @@ def fmt_source(*, indent, name, cls, id, srcinf, **kwargs):
     return '{srcinf}  {indent}-{name}{cls}{id}'.format(indent=indent, name=name, cls=cls, id=id, srcinf=srcinf)
 
 
+def select_one_strict(bsObj, selector):
+    assert isinstance(bsObj, PageElement), type(bsObj)
+    assert isinstance(selector, str), type(selector)
+    
+    bsObjSub = bsObj.select(selector)
+    assert len(bsObjSub) == 1, 'css selector must correspond to 1 unique element. ()' % len(bsObjSub)
+    return bsObjSub[0]
+
+
 def tree(bsObj, level=-1,
          filter=lambda x: False,
          formatter=fmt_minimum, digit=(3, 3),
-         selector=""):
+         selector=''):
     assert isinstance(bsObj, PageElement), type(bsObj)
     
     if selector:
-        bsObjSub = bsObj.select(selector)
-        assert len(bsObjSub) == 1, 'css selector must correspond to 1 unique element. ()' % len(bsObjSub)
+        bsObjCur = select_one_strict(bsObj, selector)
         
-        bsObjCur = bsObjSub[0]
         while BeautifulSoup.ROOT_TAG_NAME != bsObjCur.name:
             for sibling in list(bsObjCur.next_siblings) + list(bsObjCur.previous_siblings):
                 if isinstance(sibling, Tag):
@@ -70,6 +77,7 @@ def __parser():
     PARSER_HELP2 = 'HTML parser name (default: %(default)s)'
     PARSER_HELP3 = 'add "sourceline, pos" of corresponding start-tags'
     PARSER_HELP4 = 'css selector string, must be quoted'
+    PARSER_HELP5 = 'add HTML below tree view, in the scope specified with selector'
     
     parser = argparse.ArgumentParser(description=PARSER_DESC0)
     parser.add_argument('html', nargs='?', type=argparse.FileType('r'), default=sys.stdin,
@@ -82,7 +90,8 @@ def __parser():
                         help=PARSER_HELP3)
     parser.add_argument('--select',
                         help=PARSER_HELP4)
-    
+    parser.add_argument('--raw', default=False, action='store_true',
+                        help=PARSER_HELP5)
     return parser
 
 
@@ -100,6 +109,12 @@ def main():
     fmt = fmt_source if args.source else fmt_minimum
     flt = lambda x: x in args.filter
     dgt = __source_digit(html)
-    sct = args.select
     
-    tree(bsObj, filter=flt, formatter=fmt, digit=dgt, selector=sct)
+    tree(bsObj, filter=flt, formatter=fmt, digit=dgt, selector=args.select)
+    
+    if args.raw and args.select:
+        print('')  # blank line
+        try:
+            print(select_one_strict(bsObj, args.select))
+        except UnicodeEncodeError:
+            print('character encoding failed.')
