@@ -5,6 +5,8 @@ import sys
 
 from bs4 import BeautifulSoup, PageElement, Tag
 
+from .compat import stream_configure
+
 
 def digitlize(n):
     if n == 0:
@@ -137,25 +139,28 @@ def __parser():
     return parser
 
 
-parser = __parser()
-
-
 def main():
     if sys.stdin.isatty():
         parser.print_help(); return
     
-    args = parser.parse_args()
+    # set ahead of parser creation
+    parser1 = argparse.ArgumentParser(add_help=False)
+    parser1.add_argument('--encoding', default='utf-8')
+    args, _ = parser1.parse_known_args()
     
-    # set ahead of read/print
-    sys.stdin.reconfigure(encoding=args.encoding)
-    sys.stdout.reconfigure(encoding=args.encoding)
+    sys.stdin  = stream_configure(args.encoding, sys.stdin)
+    sys.stdout = stream_configure(args.encoding, sys.stdout)
+    sys.stderr = stream_configure(args.encoding, sys.stderr)
+    
+    parser = __parser()
+    args = parser.parse_args()
     
     # souplize
     html = args.html.read()
     bsObj = BeautifulSoup(html, features=args.parser)
     
-    # destructive parse!
-    HtmlTree().parse(bsObj, filter=args.filter, selector=args.select).pprint(source=args.source, text=args.text)
+    # destructive!
+    HtmlTree().parse(bsObj, filter=args.filter, selector=args.select).pprint(source=args.source, text=args.text, file=sys.stdout)
     
     if args.raw and args.select:
         print('')  # blank line
