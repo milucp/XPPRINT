@@ -3,7 +3,7 @@ from io import StringIO
 import math
 import sys
 
-from bs4 import BeautifulSoup, PageElement, Tag
+from bs4 import BeautifulSoup, PageElement, Tag, NavigableString
 
 from .compat import stream_configure
 
@@ -26,7 +26,13 @@ class HtmlNode(object):
         self.srcline = bsObj.sourceline
         self.srcpos  = bsObj.sourcepos
         self.level   = level
-        self.text    = bsObj.get_text()
+        self.text    = self.__get_own_text(bsObj)
+    
+    def __get_own_text(self, bsObj):
+        for c in bsObj.children:
+            if isinstance(c, NavigableString):
+                return c.string
+        return ''
     
     def pprint(self, source, srcdigit, treedigit=0, *, file=sys.stdout):
         name    = self.name
@@ -115,11 +121,12 @@ def __parser():
     PARSER_HELP3 = 'add "sourceline, pos" of corresponding start-tags'
     PARSER_HELP4 = 'css selector string, must be quoted'
     PARSER_HELP5 = 'add HTML below tree view, in the scope specified with selector'
-    PARSER_HELP6 = 'text encoding of file/stdin/stdout'
+    PARSER_HELP6 = 'text encoding of stdin/stdout'
     PARSER_HELP7 = 'add "text value" of corresponding tags'
     
     parser = argparse.ArgumentParser(description=PARSER_DESC0)
-    parser.add_argument('html', nargs='?', type=argparse.FileType('r'), default=sys.stdin,
+    parser.add_argument('html', nargs='?', type=argparse.FileType('r', encoding='utf-8'),
+                        default=sys.stdin,
                         help=PARSER_HELP0)
     parser.add_argument('--filter', nargs='*', default=['p', 'br', 'span'],
                         help=PARSER_HELP1)
@@ -140,9 +147,6 @@ def __parser():
 
 
 def main():
-    if sys.stdin.isatty():
-        parser.print_help(); return
-    
     # set ahead of parser creation
     parser1 = argparse.ArgumentParser(add_help=False)
     parser1.add_argument('--encoding', default='utf-8')
@@ -154,6 +158,10 @@ def main():
     
     parser = __parser()
     args = parser.parse_args()
+    
+    # prohibit inputmode
+    if sys.stdin.isatty() and '<stdin>' == args.html.name:
+        parser.print_help(); return
     
     # souplize
     html = args.html.read()

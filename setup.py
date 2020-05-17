@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-with open('README.md') as readme_file:
+with open('README.md', encoding='utf-8') as readme_file:
     readme = readme_file.read()
 
 requirements = ['beautifulsoup4>=4.9.0',]
@@ -39,6 +39,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/milucp/xpprint',
-    version='0.1.5',
+    version='0.1.5.1',
     zip_safe=False,
 )
